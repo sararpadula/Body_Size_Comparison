@@ -209,18 +209,71 @@ wing_difference_by_species <-ggplot(bodySize, aes(x=Wing_Difference, fill=Specie
 wing_difference_by_species
 
 
-# seeing if adult wing length predicts nestling wing length
+# seeing if adult wing length and adult tarsus length predict nestling wing length / tarsus length
 head(bodySize)
-wingPredictsNest <- lm(Avg.Nestling.Wing ~ Male.Wing.Chord+Female.Wing.Chord, data = bodySize)
-summary(wingPredictsNest)
+MOCH <- subset(bodySize, Species == "MOCH")
+BCCH <- subset(bodySize, Species == "BCCH")
+mochwingPredictsNest <- lm(Avg.Nestling.Wing ~ Male.Wing.Chord+Female.Wing.Chord, data = MOCH)
+bcchwingPredictsNest <- lm(Avg.Nestling.Wing ~ Male.Wing.Chord+Female.Wing.Chord, data = BCCH)
+summary(mochwingPredictsNest)
+summary(bcchwingPredictsNest)
 
-maleTarsus <- lm(Male.Tarsus ~ MaleBander, data = bodySize)
-femaleTarsus <- lm(Female.Tarsus ~ FemaleBander, data = bodySize)
+maleTarsus <- lm(Male.Tarsus ~ MaleBander, data = MOCH)
+femaleTarsus <- lm(Female.Tarsus ~ FemaleBander, data = MOCH)
 summary(maleTarsus)
 summary(femaleTarsus)
 
-nestlingwing <- lm(Avg.Nestling.Wing ~ Avg.Wing, data=bodySize)
-summary(nestlingwing)
+nestlingtarsusM <- lm(Avg.Nestling.Tarsus ~ Male.Tarsus + Female.Tarsus, data=MOCH)
+nestlingtarsusB <- lm(Avg.Nestling.Tarsus ~ Male.Tarsus + Female.Tarsus, data=BCCH)
+summary(nestlingtarsusM)
+summary(nestlingtarsusB)
 
-nestlingtarsus <- lm(Avg.Nestling.Tarsus ~ Male.Tarsus + Female.Tarsus, data=bodySize)
-summary(nestlingtarsus)
+
+#let's see if wing length difference is a predictor of any variables
+
+#first we must check that the variance is less than the mean (it is)
+var(na.omit(bodySize$Egg_Number))
+mean(na.omit(bodySize$Egg_Number))
+
+library(glmmTMB)
+mochEggNumber1 <- glmmTMB(Egg_Number ~ Wing_Difference + Elevation, family = poisson, data = MOCH)
+mochEggNumber2 <- glmmTMB(Egg_Number ~ Wing_Difference + Year, family = poisson, data = MOCH)
+mochEggNumber3 <- glmmTMB(Egg_Number ~ Wing_Difference, data = MOCH)
+
+AIC(mochEggNumber1, mochEggNumber2, mochEggNumber3)
+summary(mochEggNumber3)
+
+bcchEggNumber1 <- glmmTMB(Egg_Number ~ Wing_Difference + Elevation, family = poisson, data = BCCH)
+bcchEggNumber2 <- glmmTMB(Egg_Number ~ Wing_Difference + Year, family = poisson, data = BCCH)
+bcchEggNumber3 <- glmmTMB(Egg_Number ~ Wing_Difference, data = BCCH)
+
+AIC(bcchEggNumber1, bcchEggNumber2, bcchEggNumber3)
+summary(bcchEggNumber3)
+
+#Checking the residuals of the model
+{
+  plot(fitted(mochEggNumber3),residuals(mochEggNumber3,"deviance"))
+  abline(h=0,lty=2)
+}
+{
+  plot(fitted(mochEggNumber3), na.omit(MOCH$Egg_Number))
+  abline(a=0,b=1)
+  cor(fitted(mochEggNumber3), na.omit(MOCH$Egg_Number))
+}
+
+#^^ we find that there is no relationship between clutch size and the difference between female and male wing length between pairs. Now, I want to test if this is true for average nestling weight as well.
+
+#Testing different models for the effect of wing difference on average nestling weight
+mochAvgNWeight1 <- lm(Avg_Nestling_Weight ~ Wing_Difference, data = MOCH)
+mochAvgNWeight2 <- lm(Avg_Nestling_Weight ~ Wing_Difference + Year, data = MOCH)
+mochAvgNWeight3 <- lm(Avg_Nestling_Weight ~ Wing_Difference + Elevation, data = MOCH)
+mochAvgNWeight4 <- lm(Avg_Nestling_Weight ~ Wing_Difference + Elevation + Year, data = MOCH)
+
+summary(mochAvgNWeight1)
+summary(mochAvgNWeight2)
+summary(mochAvgNWeight3)
+summary(mochAvgNWeight4)
+
+mochAvgNWeight.null <- lm(Avg_Nestling_Weight ~ 1, data = MOCH)
+
+anova(mochAvgNWeight.null,mochAvgNWeight3)
