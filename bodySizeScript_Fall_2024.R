@@ -230,7 +230,8 @@ summary(nestlingtarsusB)
 
 
 #let's see if wing length difference is a predictor of any variables
-
+MOCH$Year <- as.factor(MOCH$Year)
+BCCH$Year <- as.factor(BCCH$Year)
 #first we must check that the variance is less than the mean (it is)
 var(na.omit(bodySize$Egg_Number))
 mean(na.omit(bodySize$Egg_Number))
@@ -277,3 +278,145 @@ summary(mochAvgNWeight4)
 mochAvgNWeight.null <- lm(Avg_Nestling_Weight ~ 1, data = MOCH)
 
 anova(mochAvgNWeight.null,mochAvgNWeight3)
+
+#Testing different models for the effect of wing difference on average nestling weight
+bcchAvgNWeight1 <- lm(Avg_Nestling_Weight ~ Wing_Difference, data = BCCH)
+bcchAvgNWeight2 <- lm(Avg_Nestling_Weight ~ Wing_Difference + Year, data = BCCH)
+bcchAvgNWeight3 <- lm(Avg_Nestling_Weight ~ Wing_Difference + Elevation, data = BCCH)
+bcchAvgNWeight4 <- lm(Avg_Nestling_Weight ~ Wing_Difference + Elevation + Year, data = BCCH)
+
+summary(bcchAvgNWeight1)
+summary(bcchAvgNWeight2)
+summary(bcchAvgNWeight3)
+summary(bcchAvgNWeight4)
+
+bcchAvgNWeight.null <- lm(Avg_Nestling_Weight ~ 1, data = BCCH)
+
+anova(bcchAvgNWeight.null,bcchAvgNWeight2)
+
+#testing different models for the effect of wing difference on SMI
+head(MOCH)
+mochSMI1 <- lmer(Male_SMI ~ Wing_Difference +(1|Male.ID), data = MOCH)
+mochSMI2 <- lmer(Male_SMI ~ Wing_Difference + Year +(1|Male.ID), data = MOCH)
+mochSMI3 <- lmer(Male_SMI ~ Wing_Difference + Elevation +(1|Male.ID), data = MOCH)
+mochSMI4 <- lmer(Male_SMI ~ Wing_Difference + Year + Elevation +(1|Male.ID), data = MOCH)
+
+aic_results <- AIC(mochSMI1, mochSMI2, mochSMI3, mochSMI4)
+
+print(aic_results)
+
+summary(mochSMI1)
+
+
+bcchSMI1 <- lm(Male_SMI ~ Wing_Difference, data = BCCH)
+bcchSMI2 <- lm(Male_SMI ~ Wing_Difference + Year, data = BCCH)
+bcchSMI3 <- lm(Male_SMI ~ Wing_Difference + Elevation, data = BCCH)
+bcchSMI4 <- lm(Male_SMI ~ Wing_Difference + Year + Elevation, data = BCCH)
+
+aic_results <- AIC(bcchSMI1, bcchSMI2, bcchSMI3, bcchSMI4)
+
+print(aic_results)
+
+summary(bcchSMI1)
+
+
+#testing different models for the effect of wing difference on SMI
+head(MOCH)
+mochFSMI1 <- lmer(Female_SMI ~ Wing_Difference +(1|Female.ID), data = MOCH)
+mochFSMI2 <- lmer(Female_SMI ~ Wing_Difference + Year +(1|Female.ID), data = MOCH)
+mochFSMI3 <- lmer(Female_SMI ~ Wing_Difference + Elevation +(1|Female.ID), data = MOCH)
+mochFSMI4 <- lmer(Female_SMI ~ Wing_Difference + Year + Elevation +(1|Female.ID), data = MOCH)
+
+aic_results <- AIC(mochSMI1, mochSMI2, mochSMI3, mochSMI4)
+
+print(aic_results)
+
+summary(mochSMI1)
+
+
+bcchFSMI1 <- lmer(Female_SMI ~ Wing_Difference + (1|Female.ID), data = BCCH)
+bcchFSMI2 <- lmer(Female_SMI ~ Wing_Difference + Year+ (1|Female.ID), data = BCCH)
+bcchFSMI3 <- lmer(Female_SMI ~ Wing_Difference + Elevation+ (1|Female.ID), data = BCCH)
+bcchFSMI4 <- lmer(Female_SMI ~ Wing_Difference + Year + Elevation+ (1|Female.ID), data = BCCH)
+
+aic_results <- AIC(bcchSMI1, bcchSMI2, bcchSMI3, bcchSMI4)
+
+print(aic_results)
+
+summary(bcchSMI1)
+install.packages("sjPlot")
+library(sjPlot)
+plot_model(bcchFSMI1, type = "re", show.values = TRUE, value.offset = 0.3)
+plot_model(mochAvgNWeight3, type = "est", show.values = TRUE)
+
+ggplot(data = BCCH, aes(x=Wing_Difference, y=Male_SMI))+
+  geom_point(color = "#0072b2", position = "jitter", shape=16, size=4)+
+  geom_abline(slope = bcchSMI1$coefficients[2], intercept = bcchSMI1$coefficients[1], linewidth = 2)+
+  #geom_smooth(aes(color = Species, fill = Species),method='glm', method.args=list(family='poisson'), linewidth = 2)+
+  theme_classic()+
+  xlab("Wing length difference (mm)")+
+  ylab("Male SMI")+
+  theme(axis.text = element_text(size=14, color = "black"))+
+  theme(axis.title = element_text(size = 14))+
+  theme(axis.title.x = element_text(margin = margin(t = 10)))+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+
+  theme(panel.border = element_rect(color = "black", 
+                                    fill = NA, 
+                                    linewidth = 0.5))+
+  theme(text = element_text(family = "sans"))+
+  stat_regline_equation(size = 5)+
+  ylim(7,15)
+
+ggplot(data = BCCH, aes(x=Wing_Difference, y=Female_SMI))+
+  geom_point(color = "#0072b2", position = "jitter", shape=16, size=4)+
+  geom_abline(slope = bcchFSMI1$coefficients[2], intercept = bcchFSMI1$coefficients[1], linewidth = 2)+
+  #geom_smooth(aes(color = Species, fill = Species),method='glm', method.args=list(family='poisson'), linewidth = 2)+
+  theme_classic()+
+  xlab("Wing length difference (mm)")+
+  ylab("Male SMI")+
+  theme(axis.text = element_text(size=14, color = "black"))+
+  theme(axis.title = element_text(size = 14))+
+  theme(axis.title.x = element_text(margin = margin(t = 10)))+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+
+  theme(panel.border = element_rect(color = "black", 
+                                    fill = NA, 
+                                    linewidth = 0.5))+
+  theme(text = element_text(family = "sans"))+
+  stat_regline_equation(size = 5)+
+  ylim(7,15)
+
+ggplot(data = MOCH, aes(x=Wing_Difference, y=Male_SMI))+
+  geom_point(color = "#cc79a7", position = "jitter", shape=16, size=4)+
+  geom_abline(slope = mochSMI1$coefficients[2], intercept = mochSMI1$coefficients[1], linewidth = 2)+
+  #geom_smooth(aes(color = Species, fill = Species),method='glm', method.args=list(family='poisson'), linewidth = 2)+
+  theme_classic()+
+  xlab("Wing length difference (mm)")+
+  ylab("Male SMI")+
+  theme(axis.text = element_text(size=14, color = "black"))+
+  theme(axis.title = element_text(size = 14))+
+  theme(axis.title.x = element_text(margin = margin(t = 10)))+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+
+  theme(panel.border = element_rect(color = "black", 
+                                    fill = NA, 
+                                    linewidth = 0.5))+
+  theme(text = element_text(family = "sans"))+
+  stat_regline_equation(size = 5)+
+  ylim(7,15)
+
+ggplot(data = MOCH, aes(x=Wing_Difference, y=Female_SMI))+
+  geom_point(color = "#cc79a7", position = "jitter", shape=16, size=4)+
+  geom_abline(slope = mochSMI1$coefficients[2], intercept = mochSMI1$coefficients[1], linewidth = 2)+
+  #geom_smooth(aes(color = Species, fill = Species),method='glm', method.args=list(family='poisson'), linewidth = 2)+
+  theme_classic()+
+  xlab("Wing length difference (mm)")+
+  ylab("Male SMI")+
+  theme(axis.text = element_text(size=14, color = "black"))+
+  theme(axis.title = element_text(size = 14))+
+  theme(axis.title.x = element_text(margin = margin(t = 10)))+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+
+  theme(panel.border = element_rect(color = "black", 
+                                    fill = NA, 
+                                    linewidth = 0.5))+
+  theme(text = element_text(family = "sans"))+
+  stat_regline_equation(size = 5)+
+  ylim(7,15)
