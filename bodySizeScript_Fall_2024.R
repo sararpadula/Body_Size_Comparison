@@ -344,79 +344,35 @@ aic_results <- AIC(bcchSMI1, bcchSMI2, bcchSMI3, bcchSMI4)
 print(aic_results)
 
 summary(bcchSMI1)
-install.packages("sjPlot")
-library(sjPlot)
-plot_model(bcchFSMI1, type = "re", show.values = TRUE, value.offset = 0.3)
-plot_model(mochAvgNWeight3, type = "est", show.values = TRUE)
 
-ggplot(data = BCCH, aes(x=Wing_Difference, y=Male_SMI))+
-  geom_point(color = "#0072b2", position = "jitter", shape=16, size=4)+
-  geom_abline(slope = bcchSMI1$coefficients[2], intercept = bcchSMI1$coefficients[1], linewidth = 2)+
-  #geom_smooth(aes(color = Species, fill = Species),method='glm', method.args=list(family='poisson'), linewidth = 2)+
-  theme_classic()+
-  xlab("Wing length difference (mm)")+
-  ylab("Male SMI")+
-  theme(axis.text = element_text(size=14, color = "black"))+
-  theme(axis.title = element_text(size = 14))+
-  theme(axis.title.x = element_text(margin = margin(t = 10)))+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+
-  theme(panel.border = element_rect(color = "black", 
-                                    fill = NA, 
-                                    linewidth = 0.5))+
-  theme(text = element_text(family = "sans"))+
-  stat_regline_equation(size = 5)+
-  ylim(7,15)
 
-ggplot(data = BCCH, aes(x=Wing_Difference, y=Female_SMI))+
-  geom_point(color = "#0072b2", position = "jitter", shape=16, size=4)+
-  geom_abline(slope = bcchFSMI1$coefficients[2], intercept = bcchFSMI1$coefficients[1], linewidth = 2)+
-  #geom_smooth(aes(color = Species, fill = Species),method='glm', method.args=list(family='poisson'), linewidth = 2)+
-  theme_classic()+
-  xlab("Wing length difference (mm)")+
-  ylab("Male SMI")+
-  theme(axis.text = element_text(size=14, color = "black"))+
-  theme(axis.title = element_text(size = 14))+
-  theme(axis.title.x = element_text(margin = margin(t = 10)))+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+
-  theme(panel.border = element_rect(color = "black", 
-                                    fill = NA, 
-                                    linewidth = 0.5))+
-  theme(text = element_text(family = "sans"))+
-  stat_regline_equation(size = 5)+
-  ylim(7,15)
+ggplot(data = MOCH, aes(x = Wing_Difference, y = Male_SMI))+
+  geom_point(color = "black", shape=21, size=4)
 
-ggplot(data = MOCH, aes(x=Wing_Difference, y=Male_SMI))+
-  geom_point(color = "#cc79a7", position = "jitter", shape=16, size=4)+
-  geom_abline(slope = mochSMI1$coefficients[2], intercept = mochSMI1$coefficients[1], linewidth = 2)+
-  #geom_smooth(aes(color = Species, fill = Species),method='glm', method.args=list(family='poisson'), linewidth = 2)+
-  theme_classic()+
-  xlab("Wing length difference (mm)")+
-  ylab("Male SMI")+
-  theme(axis.text = element_text(size=14, color = "black"))+
-  theme(axis.title = element_text(size = 14))+
-  theme(axis.title.x = element_text(margin = margin(t = 10)))+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+
-  theme(panel.border = element_rect(color = "black", 
-                                    fill = NA, 
-                                    linewidth = 0.5))+
-  theme(text = element_text(family = "sans"))+
-  stat_regline_equation(size = 5)+
-  ylim(7,15)
+ggplot(data = MOCH, aes(x = Wing_Difference, y = Female_SMI))+
+  geom_point(color = "black", shape=21, size=4)
 
-ggplot(data = MOCH, aes(x=Wing_Difference, y=Female_SMI))+
-  geom_point(color = "#cc79a7", position = "jitter", shape=16, size=4)+
-  geom_abline(slope = mochSMI1$coefficients[2], intercept = mochSMI1$coefficients[1], linewidth = 2)+
-  #geom_smooth(aes(color = Species, fill = Species),method='glm', method.args=list(family='poisson'), linewidth = 2)+
-  theme_classic()+
-  xlab("Wing length difference (mm)")+
-  ylab("Male SMI")+
-  theme(axis.text = element_text(size=14, color = "black"))+
-  theme(axis.title = element_text(size = 14))+
-  theme(axis.title.x = element_text(margin = margin(t = 10)))+
-  theme(axis.title.y = element_text(margin = margin(r = 10)))+
-  theme(panel.border = element_rect(color = "black", 
-                                    fill = NA, 
-                                    linewidth = 0.5))+
-  theme(text = element_text(family = "sans"))+
-  stat_regline_equation(size = 5)+
-  ylim(7,15)
+ggplot(data = BCCH, aes(x = Wing_Difference, y = Male_SMI))+
+  geom_point(color = "black", shape=21, size=4)
+
+ggplot(data = BCCH, aes(x = Wing_Difference, y = Female_SMI))+
+  geom_point(color = "black",  shape=21, size=4)
+
+
+ggplot(data = MOCH, aes(x = Wing_Difference, y = Egg_Number))+
+  geom_point(color = "black", shape=21, size=4)
+
+ggplot(data = MOCH, aes(x = Wing_Difference, y = Avg_Nestling_Weight))+
+  geom_point(color = "black", shape=21, size=4)
+
+ggplot(data = BCCH, aes(x = Wing_Difference, y = Egg_Number))+
+  geom_point(color = "black", shape=21, size=4)
+
+ggplot(data = BCCH, aes(x = Wing_Difference, y = Avg_Nestling_Weight))+
+  geom_point(color = "black", shape=21, size=4)
+
+ggplot(data = MOCH, aes(x = Wing_Difference, y = Nestling_Number))+
+  geom_point(color = "black", shape=21, size=4)
+
+ggplot(data = BCCH, aes(x = Wing_Difference, y = Nestling_Number))+
+  geom_point(color = "black", shape=21, size=4)
