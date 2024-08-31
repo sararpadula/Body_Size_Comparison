@@ -376,3 +376,210 @@ ggplot(data = MOCH, aes(x = Wing_Difference, y = Nestling_Number))+
 
 ggplot(data = BCCH, aes(x = Wing_Difference, y = Nestling_Number))+
   geom_point(color = "black", shape=21, size=4)
+
+
+#Saving the subsetted dataframe for permutations
+write.csv(MOCH,"~/MOCH.csv", row.names = TRUE)
+write.csv(BCCH,"~/BCCH.csv", row.names = TRUE)
+head(BCCH)
+
+#Analyzing the permutations
+bcchPermutations <- read.csv("BCCHPermutations.csv")
+mochPermutations <- read.csv("MOCHPermutations.csv")
+
+nrow(BCCH)
+median(BCCH$Wing_Difference)
+
+#Subsetting observed BCCH data into female larger, male slightly larger, and male much larger categories
+BCCHfemaleLarger <- subset(BCCH, Wing_Difference < 0)
+BCCHmaleSlightly <- subset(BCCH, Wing_Difference > 0 & Wing_Difference < 3)
+BCCHmaleMuch <- subset(BCCH, Wing_Difference >= 3)
+
+#calculating the observed percentage of female larger, male slightly larger, and male much larger BCCH pairings
+speciesBCCHFL <- nrow(BCCHfemaleLarger)/nrow(BCCH)
+speciesBCCHMS <- nrow(BCCHmaleSlightly)/nrow(BCCH)
+speciesBCCHMM <- nrow(BCCHmaleMuch)/nrow(BCCH)
+
+head(bcchPermutations)
+bcchPermutations$Female.larger <- as.numeric(bcchPermutations$Female.larger)
+bcchPermutations$male.slightly <- as.numeric(bcchPermutations$male.slightly)
+bcchPermutations$male.much <- as.numeric(bcchPermutations$male.much)
+
+
+shapiro.test(bcchPermutations$Female.larger)
+ggqqplot(bcchPermutations$Female.larger)
+shapiro.test(bcchPermutations$male.slightly)
+shapiro.test(bcchPermutations$male.much)
+
+#getting ranges of permutation data, and conducting a one sample t test comparing the observed percentage of each category with the permutations
+
+min(as.numeric(bcchPermutations$Female.larger))
+max(as.numeric(bcchPermutations$Female.larger))
+
+t.test(bcchPermutations$Female.larger, mu = speciesBCCHFL)
+
+min(as.numeric(bcchPermutations$male.slightly))
+max(as.numeric(bcchPermutations$male.slightly))
+
+t.test(bcchPermutations$male.slightly, mu = speciesBCCHMS)
+
+min(as.numeric(bcchPermutations$male.much))
+max(as.numeric(bcchPermutations$male.much))
+
+t.test(bcchPermutations$male.much, mu = speciesBCCHMM)
+
+###############MOCH Permutations ################################
+
+#subsetting observed MOCH data into female larger, male slightly larger, and male much larger 
+median(MOCH$Wing_Difference)
+
+MOCHfemaleLarger <- subset(MOCH, Wing_Difference < 0)
+MOCHmaleSlightly <- subset(MOCH, Wing_Difference > 0 & Wing_Difference <= 3)
+MOCHmaleMuch <- subset(MOCH, Wing_Difference >3)
+
+#calculating the observed percentage of female larger, male slightly larger, and male much larger MOCH pairings
+speciesMOCHFL <- nrow(MOCHfemaleLarger)/nrow(MOCH)
+speciesMOCHMS <- nrow(MOCHmaleSlightly)/nrow(MOCH)
+speciesMOCHMM <- nrow(MOCHmaleMuch)/nrow(MOCH)
+mean(mochPermutations$male.much)
+head(mochPermutations)
+
+min(as.numeric(mochPermutations$Female.larger))
+max(as.numeric(mochPermutations$Female.larger))
+
+t.test(mochPermutations$Female.larger, mu = speciesMOCHFL)
+
+min(as.numeric(mochPermutations$male.slightly))
+max(as.numeric(mochPermutations$male.slightly))
+
+t.test(mochPermutations$male.slightly, mu = speciesMOCHMS)
+
+min(as.numeric(mochPermutations$male.much))
+max(as.numeric(mochPermutations$male.much))
+
+t.test(mochPermutations$male.much, mu = speciesMOCHMM)
+
+
+bcchPermutations$Female.larger <- bcchPermutations$Female.larger*100
+speciesBCCHFL <- speciesBCCHFL*100
+
+bcchPermutations$male.slightly <- bcchPermutations$male.slightly*100
+speciesBCCHMS <- speciesBCCHMS*100
+
+bcchPermutations$male.much <- bcchPermutations$male.much*100
+speciesBCCHMM <- speciesBCCHMM*100
+
+mochPermutations$Female.larger <- mochPermutations$Female.larger*100
+speciesMOCHFL <- speciesMOCHFL*100
+
+mochPermutations$male.slightly <- mochPermutations$male.slightly*100
+speciesMOCHMS <- speciesMOCHMS*100
+
+mochPermutations$male.much <- mochPermutations$male.much*100
+speciesMOCHMM <- speciesMOCHMM*100
+
+#From the above analyses I find that the observed percentages are significantly different form the simulated percentages. Now let's visualize it!
+library(patchwork)
+
+BCCHFL <- ggplot(bcchPermutations, aes(x = Female.larger))+
+  geom_histogram(fill = "#0072b2", bins = 10, color = "black")+
+  geom_vline(aes(xintercept =speciesBCCHFL), color = "grey", linewidth = 2, )+
+  theme_classic()+
+  xlab("% of BCCH pairs with females\nlarger than males")+
+  ylab("Count")+
+  theme(axis.text = element_text(size=14, color = "black"))+
+  theme(axis.title = element_text(size = 14))+
+  theme(axis.title.x = element_text(margin = margin(t = 10)))+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+
+  theme(text = element_text(family = "sans"))+
+  theme(panel.border = element_rect(color = "black", 
+                                    fill = NA, 
+                                    size = 0.5))+
+  ylim(0,400)
+
+BCCHMS <- ggplot(bcchPermutations, aes(x = male.slightly))+
+  geom_histogram(fill = "#0072b2", bins = 10, color = "black")+
+  geom_vline(aes(xintercept =speciesBCCHMS), color = "grey", linewidth = 2)+
+  theme_classic()+
+  xlab("% of BCCH pairs with males slightly\n larger than females")+
+  ylab("")+
+  theme(axis.text = element_text(size=14, color = "black"))+
+  theme(axis.title = element_text(size = 14))+
+  theme(axis.title.x = element_text(margin = margin(t = 10)))+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+
+  theme(text = element_text(family = "sans"))+
+  theme(panel.border = element_rect(color = "black", 
+                                    fill = NA, 
+                                    size = 0.5))+
+  ylim(0,400)
+
+BCCHMM <- ggplot(bcchPermutations, aes(x = male.much))+
+  geom_histogram(fill = "#0072b2", bins = 10, color = "black")+
+  geom_vline(aes(xintercept =speciesBCCHMM), color = "gray", linewidth = 2)+
+  theme_classic()+
+  xlab("% of BCCH pairs with males much\n larger than females")+
+  ylab("")+
+  theme(axis.text = element_text(size=14, color = "black"))+
+  theme(axis.title = element_text(size = 14))+
+  theme(axis.title.x = element_text(margin = margin(t = 10)))+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+
+  theme(text = element_text(family = "sans"))+
+  theme(panel.border = element_rect(color = "black", 
+                                    fill = NA, 
+                                    size = 0.5))+
+  ylim(0,400)
+
+MOCHFL <- ggplot(mochPermutations, aes(x = Female.larger))+
+  geom_histogram(fill = "#cc79a7", bins = 10, color = "black")+
+  geom_vline(aes(xintercept =speciesMOCHFL), color = "gray", linewidth = 2)+
+  theme_classic()+
+  xlab("% of MOCH pairs with females\n larger than males")+
+  ylab("Count")+
+  theme(axis.text = element_text(size=14, color = "black"))+
+  theme(axis.title = element_text(size = 14))+
+  theme(axis.title.x = element_text(margin = margin(t = 10)))+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+
+  theme(text = element_text(family = "sans"))+
+  theme(panel.border = element_rect(color = "black", 
+                                    fill = NA, 
+                                    size = 0.5))+
+  ylim(0,400)
+
+MOCHMS <- ggplot(mochPermutations, aes(x = male.slightly))+
+  geom_histogram(fill = "#cc79a7", bins = 10, color = "black")+
+  geom_vline(aes(xintercept =speciesMOCHMS), color = "gray", linewidth = 2)+
+  theme_classic()+
+  xlab("% of MOCH pairs with males slightly\n larger than females")+
+  ylab("")+
+  theme(axis.text = element_text(size=14, color = "black"))+
+  theme(axis.title = element_text(size = 14))+
+  theme(axis.title.x = element_text(margin = margin(t = 10)))+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+
+  theme(text = element_text(family = "sans"))+
+  theme(panel.border = element_rect(color = "black", 
+                                    fill = NA, 
+                                    size = 0.5))+
+  ylim(0,400)
+
+MOCHMM <- ggplot(mochPermutations, aes(x = male.much))+
+  geom_histogram(fill = "#cc79a7", bins = 10, color = "black")+
+  geom_vline(aes(xintercept =speciesMOCHMM), color = "gray", linewidth = 2)+
+  theme_classic()+
+  xlab("% of MOCH pairs with males much \nlarger than females")+
+  ylab("")+
+  theme(axis.text = element_text(size=14, color = "black"))+
+  theme(axis.title = element_text(size = 14))+
+  theme(axis.title.x = element_text(margin = margin(t = 10)))+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+
+  theme(text = element_text(family = "sans"))+
+  theme(panel.border = element_rect(color = "black", 
+                                    fill = NA, 
+                                    size = 0.5))+
+  ylim(0,400)
+
+p1 <-(BCCHFL + BCCHMS + BCCHMM)
+p2 <-(MOCHFL + MOCHMS + MOCHMM)
+
+p1
+p2
+
