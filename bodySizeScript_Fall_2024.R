@@ -18,63 +18,121 @@ bodySizeSexPop$Year <- as.factor(bodySizeSexPop$Year)
 bodySizeSexPop$ID <- as.factor(bodySizeSexPop$ID)
 bodySizeSexPop$Location <- as.factor(bodySizeSexPop$Location)
 
+MOCHpop <- subset(bodySizeSexPop, Species = "MOCH")
+BCCHpop <- subset(bodySizeSexPop, Species = "BCCH")
+MOCHpop <- na.omit(MOCHpop)
+BCCHpop <- na.omit(BCCHpop)
+
+MOCHpop$lnElevation <- log(MOCHpop$Elevation)
+BCCHpop$lnElevation <- log(BCCHpop$Elevation)
+
+MOCH$lnElevation <- log(MOCH$Elevation)
+BCCH$lnElevation <- log(BCCH$Elevation)
 #linear mixed model to determine if Wing length is predicted by sex and species with ID as random effect and bander, year, location as fixed effects. Population level analysis
-head(bodySizeSexPop)
-wingPop1 <- lmer(Wing.Chord ~ Sex + Species + Bander + Year + Location + (1|ID), data = bodySizeSexPop, REML = FALSE)
-wingPop2 <- lmer(Wing.Chord ~ Sex*Species + Bander + Year + Location + (1|ID), data = bodySizeSexPop, REML = FALSE)
-wingPop3 <- lmer(Wing.Chord ~ Sex + Species + Bander + Location + (1|ID), data = bodySizeSexPop, REML = FALSE)
-wingPop4 <- lmer(Wing.Chord ~ Sex*Species + Bander + Location + (1|ID), data = bodySizeSexPop, REML = FALSE)
-wingPop5 <- lmer(Wing.Chord ~ Sex + Species + Year + Location + (1|ID), data = bodySizeSexPop, REML = FALSE)
-wingPop6 <- lmer(Wing.Chord ~ Sex*Species + Year + Location + (1|ID), data = bodySizeSexPop, REML = FALSE)
-wingPop7 <- lmer(Wing.Chord ~ Sex*Species + (1|ID), data = bodySizeSexPop, REML = FALSE)
-wingPop8 <- lmer(Wing.Chord ~Sex*Species + Bander + (1|ID), data = bodySizeSexPop, REML = FALSE)
 
-pop.null <- lmer(Wing.Chord ~ Bander + (1|ID), data = bodySizeSexPop, REML = FALSE)
+mochPop1 <- lmer(Wing.Chord ~ Sex + Bander + Year + Elevation + (1|ID), data = MOCHpop, REML = FALSE)
+mochPop2 <- lmer(Wing.Chord ~ Sex + Bander + Elevation + (1|ID), data = MOCHpop, REML = FALSE)
+mochPop3 <- lmer(Wing.Chord ~ Sex + Year + (1|ID), data = MOCHpop, REML = FALSE)
+mochPop4 <- lmer(Wing.Chord ~ Sex + (1|ID), data = MOCHpop, REML = FALSE)
 
-aic_results <- AIC(wingPop1, wingPop2, wingPop3, wingPop4, wingPop5, wingPop6, wingPop7, wingPop8)
+pop.null <- lmer(Wing.Chord ~ Bander + Elevation + (1|ID), data = MOCHpop, REML = FALSE)
+
+aic_results <- AIC(mochPop1, mochPop2, mochPop3, mochPop4)
 print(aic_results)
 
-summary(wingPop8)
+summary(mochPop2)
 summary(pop.null)
 
-anova(pop.null, wingPop8)
+anova(pop.null, mochPop2)
 
 #check the residuals on these models
-hist(resid(wingPop8))
+hist(resid(mochPop2))
 
-plot(wingPop2)
+plot(mochPop2)
+
+#linear mixed model to determine if Wing length is predicted by sex and species with ID as random effect and bander, year, location as fixed effects. Population level analysis
+
+bcchPop1 <- lmer(Wing.Chord ~ Sex + Bander + Year + Elevation + (1|ID), data = BCCHpop, REML = FALSE)
+bcchPop2 <- lmer(Wing.Chord ~ Sex + Bander + Elevation + (1|ID), data = BCCHpop, REML = FALSE)
+bcchPop3 <- lmer(Wing.Chord ~ Sex + Year + (1|ID), data = BCCHpop, REML = FALSE)
+bcchPop4 <- lmer(Wing.Chord ~ Sex + (1|ID), data = BCCHpop, REML = FALSE)
+
+bcchpop.null <- lmer(Wing.Chord ~ Bander + Elevation + (1|ID), data = BCCHpop, REML = FALSE)
+
+aic_results <- AIC(bcchPop1, bcchPop2, bcchPop3, bcchPop4)
+print(aic_results)
+
+summary(bcchPop2)
+summary(bcchpop.null)
+
+anova(pop.null, bcchPop2)
+
+#check the residuals on these models
+hist(resid(mochPop2))
+
+plot(mochPop2)
 
 #there is a sexual size dimorphism in black-capped and mountain chickadees and MOCH have longer wings than BCCH
 #now I want to know if there is a relationship between female wing length and male wing length within pairs, which would inform if fmelaes specifically mate with males with longer wings
 #subset by species
-
+MOCH <- subset(bodySize, Species == "MOCH")
+BCCH <- subset(bodySize, Species == "BCCH")
 #ensure categorical variables are factors
-bodySize$MaleBander <- as.factor(bodySize$MaleBander)
-bodySize$FemaleBander <- as.factor(bodySize$FemaleBander)
-bodySize$Elevation <- as.numeric(bodySize$Elevation)
-bodySize$Species <- as.factor(bodySize$Species)
+MOCH$MaleBander <- as.factor(MOCH$MaleBander)
+MOCH$FemaleBander <- as.factor(MOCH$FemaleBander)
+MOCH$Elevation <- as.numeric(MOCH$Elevation)
 
-femaleWing1 <- lm(Male.Wing.Chord ~ Female.Wing.Chord + Species + MaleBander + FemaleBander + Elevation, data = bodySize)
-femaleWing2 <- lm(Male.Wing.Chord ~ Female.Wing.Chord + Species + Elevation, data = bodySize)
-femaleWing3 <- lm(Male.Wing.Chord ~ Female.Wing.Chord + Species + MaleBander +FemaleBander, data = bodySize)
-femalewing.null <- lm(Male.Wing.Chord ~ Elevation, data = bodySize)
 
-summary(femaleWing1)
-summary(femaleWing2)
-summary(femaleWing3)
+mochfemaleWing1 <- lm(Male.Wing.Chord ~ Female.Wing.Chord + MaleBander + FemaleBander + Elevation, data = MOCH)
+mochfemaleWing2 <- lm(Male.Wing.Chord ~ Female.Wing.Chord + Elevation, data = MOCH)
+mochfemaleWing3 <- lm(Male.Wing.Chord ~ Female.Wing.Chord + MaleBander +FemaleBander, data = MOCH)
+mochfemalewing.null <- lm(Male.Wing.Chord ~ Elevation, data = MOCH)
 
-aic_results <- AIC(femaleWing1, femaleWing2, femaleWing3)
+summary(mochfemaleWing1)
+summary(mochfemaleWing2)
+summary(mochfemaleWing3)
+
+aic_results <- AIC(mochfemaleWing1, mochfemaleWing2, mochfemaleWing3)
 
 print(aic_results)
 
 anova(femalewing.null, femaleWing2)
 
 #checking the fit for the residuals
-fwingresids <- femaleWing2$residuals
+fwingresids <- mochfemaleWing2$residuals
 {
   qqnorm(fwingresids)
   qqline(fwingresids)
 }
+
+#ensure categorical variables are factors
+BCCH$MaleBander <- as.factor(BCCH$MaleBander)
+BCCH$FemaleBander <- as.factor(BCCH$FemaleBander)
+BCCH$Elevation <- as.numeric(BCCH$Elevation)
+
+
+bcchfemaleWing1 <- lm(Male.Wing.Chord ~ Female.Wing.Chord + MaleBander + FemaleBander + Elevation, data = BCCH)
+bcchfemaleWing2 <- lm(Male.Wing.Chord ~ Female.Wing.Chord + Elevation, data = BCCH)
+bcchfemaleWing3 <- lm(Male.Wing.Chord ~ Female.Wing.Chord + MaleBander +FemaleBander, data = BCCH)
+bcchfemalewing.null <- lm(Male.Wing.Chord ~ Elevation, data = BCCH)
+
+summary(bcchfemaleWing1)
+summary(bcchfemaleWing2)
+summary(bcchfemaleWing3)
+
+aic_results <- AIC(bcchfemaleWing1, bcchfemaleWing2, bcchfemaleWing3)
+
+print(aic_results)
+
+anova(bcchfemalewing.null, bcchfemaleWing2)
+
+#checking the fit for the residuals
+fwingresids <- bcchfemaleWing2$residuals
+{
+  qqnorm(fwingresids)
+  qqline(fwingresids)
+}
+
 
 #creating a graph to represent this relationship
 library(ggplot2)
@@ -582,4 +640,81 @@ p2 <-(MOCHFL + MOCHMS + MOCHMM)
 
 p1
 p2
+
+#First let's plot the data
+#calculating the median diff between male and female wing length
+meanWing <- mean(bodySize$Wing_Difference)
+
+#Density plot of wing length difference colored based on species
+wing_difference_by_species <- ggplot(bodySize, aes(x=Wing_Difference, fill=Species))+
+  geom_density(alpha=0.5)+
+  #geom_vline(data=mu, aes(xintercept=grp.mean, color=Species), linetype="dashed")+
+  labs (x="Difference Between Male and Female Wing Chord (mm)", y="Density")+
+  theme_classic()+
+  scale_fill_manual(values=c("#0072b2", "#cc79a7"))+
+  theme(plot.title = element_text(hjust=0.5))+
+  scale_x_continuous(limits=c(-6,12), breaks=seq(-6,12,2))+
+  geom_vline(aes(xintercept =0), color = "black", linewidth = 1)+
+  geom_vline(aes(xintercept =meanWing), color = "black", linewidth = 1, linetype="dashed")+
+  theme(legend.position = c(0.9, 0.6))+
+  theme(panel.border = element_rect(color = "black", 
+                                    fill = NA, 
+                                    size = 0.5))+
+  theme(axis.text = element_text(size=14, color = "black"))+
+  theme(axis.title = element_text(size = 16))+
+  theme(axis.title.x = element_text(margin = margin(t = 10)))+
+  theme(axis.title.y = element_text(margin = margin(r = 10)))+
+  theme(text = element_text(family = "sans"))+
+  theme(legend.key.height= unit(1, 'cm'),
+        legend.key.width= unit(1, 'cm'),
+        legend.title = element_text(size=13),
+        legend.text = element_text(size =12))
+wing_difference_by_species
+
+wing_difference_by_species/p1/p2
+
+
+#making box plots of male and female pairs
+library(dplyr)
+bodySizePopID <- read.csv("population_SMI_nestid.csv")
+MOCHID <- subset(bodySizePopID, Species == "MOCH")
+BCCHID <- subset(bodySizePopID, Species == "BCCH")
+head(MOCHID)
+
+MOCH_count <- MOCHID %>%
+  group_by(Sex, Wing.Chord) %>%
+  summarize(count = n(), .groups = 'drop')
+
+MOCHSexWing <- ggplot(MOCHID, aes(x = Sex, y = Wing.Chord))+
+  geom_boxplot(color = "black", fill = "#cc79a7")+
+  geom_line(aes(group=Nest.ID), color = "gray")+
+  geom_point(data = MOCH_count, aes(size = count), alpha = 0.6)+
+  scale_size_continuous(range = c(2,6))+
+  theme_classic()+
+  labs(x = "Sex", y = "Wing Length (mm)")+
+  ylim(60,78)
+
+BCCH_count <- BCCHID %>%
+  group_by(Sex, Wing.Chord) %>%
+  summarize(count = n(), .groups = 'drop')
+head(BCCHID)
+
+BCCHSexWing <- ggplot(BCCHID, aes(x = Sex, y = Wing.Chord))+
+  geom_boxplot(color = "black", fill = "#0072b2")+
+  geom_line(aes(group=Nest.ID), color = "gray")+
+  geom_point(data = BCCH_count, aes(size = count), alpha = 0.6)+
+  scale_size_continuous(range = c(2,6))+
+  theme_classic()+
+  labs(x = "Sex", y = "Wing Length (mm)")+
+  ylim(60,78)+
+  theme(
+    axis.title.y = element_blank()
+  )
+
+
+wing_sex_comparison <- (MOCHSexWing + BCCHSexWing)
+head(bodySize)
+ggplot(bodySize, aes(x = Wing_Difference, y = Female_SMI, color = Species))+
+  geom_point()+
+  theme_classic()
 
