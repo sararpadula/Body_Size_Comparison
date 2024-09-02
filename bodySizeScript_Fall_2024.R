@@ -694,6 +694,7 @@ MOCHSexWing <- ggplot(MOCHID, aes(x = Sex, y = Wing.Chord))+
   labs(x = "Sex", y = "Wing Length (mm)")+
   ylim(60,78)
 
+
 BCCH_count <- BCCHID %>%
   group_by(Sex, Wing.Chord) %>%
   summarize(count = n(), .groups = 'drop')
