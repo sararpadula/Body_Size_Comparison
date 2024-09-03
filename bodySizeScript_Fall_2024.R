@@ -719,3 +719,36 @@ ggplot(bodySize, aes(x = Wing_Difference, y = Female_SMI, color = Species))+
   geom_point()+
   theme_classic()
 
+
+#Testing some things
+head(MOCH)
+library(ggplot2)
+ggplot(MOCH, aes(x = Male.Wing.Chord, y = Avg_Nestling_Weight))+
+  geom_point()
+
+nWeightWing <- lm(Avg_Nestling_Weight ~ Male.Wing.Chord + Elevation, MOCH)
+
+summary(nWeightWing)
+
+ggplot(BCCH, aes(x = Male.Wing.Chord, y = Avg_Nestling_Weight))+
+  geom_point()
+
+nWeightWing <- lm(Avg_Nestling_Weight ~ Male.Wing.Chord + Elevation, BCCH)
+
+summary(nWeightWing)
+
+ggplot(BCCH, aes(x = Elevation, y = Male.Wing.Chord))+
+  geom_point()
+ggplot(BCCH, aes(x = Elevation, y = Female.Wing.Chord))+
+  geom_point()
+ggplot(MOCH, aes(x = Elevation, y = Male.Wing.Chord))+
+  geom_point()
+ggplot(MOCH, aes(x = Elevation, y = Female.Wing.Chord))+
+  geom_point()
+
+#just looking at elevation
+BCCH$Year <- as.factor(BCCH$Year)
+MOCH$Year <- as.factor(MOCH$Year)
+elevationN <- lm(Avg_Nestling_Weight ~ Elevation + Year, BCCH)
+
+summary(elevationN)
