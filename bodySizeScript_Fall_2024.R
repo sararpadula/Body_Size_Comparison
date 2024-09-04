@@ -746,6 +746,18 @@ ggplot(MOCH, aes(x = Elevation, y = Male.Wing.Chord))+
 ggplot(MOCH, aes(x = Elevation, y = Female.Wing.Chord))+
   geom_point()
 
+ggplot(MOCH, aes(x= Elevation, y = Avg_Nestling_Weight))+
+  geom_point()
+
+lm <- lm(Avg_Nestling_Weight ~ Elevation, data = MOCH)
+
+lm <- lm(Avg_Nestling_Weight ~ Elevation, data = BCCH)
+
+summary(lm)
+
+ggplot(BCCH, aes(x= Elevation, y = Avg_Nestling_Weight))+
+  geom_point()
+
 #just looking at elevation
 BCCH$Year <- as.factor(BCCH$Year)
 MOCH$Year <- as.factor(MOCH$Year)
