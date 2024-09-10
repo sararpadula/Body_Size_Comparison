@@ -59,6 +59,10 @@ bcchBreed.fS <- bcchBreed %>% filter(!is.na(Female_SMI))
 mochBreed.mS <- mochBreed %>% filter(!is.na(Male_SMI))
 bcchBreed.mS <- bcchBreed %>% filter(!is.na(Male_SMI))
 
+#Provisioning
+mochBreed.p <- mochBreed %>% filter(!is.na(Provisioning))
+bcchBreed.p <- bcchBreed %>% filter(!is.na(Provisioning))
+
 ## Numerically subsetting data #########################################
 mochBreedNum <- subset(breed, Species == "MOCH")
 bcchBreedNum <- subset(breed, Species == "BCCH")
@@ -90,6 +94,11 @@ bcchBreedN.fS <- bcchBreedNum %>% filter(!is.na(Female_SMI))
 ## Male SMI
 mochBreedN.mS <- mochBreedNum %>% filter(!is.na(Male_SMI))
 bcchBreedN.mS <- bcchBreedNum %>% filter(!is.na(Male_SMI))
+
+## Provisioning
+
+mochBreedN.p <- mochBreedNum %>% filter(!is.na(Provisioning))
+bcchBreedN.p <- bcchBreedNum %>% filter(!is.na(Provisioning))
 
 #### Model categorical wing length data ##### #MOCH
 
@@ -455,6 +464,68 @@ plot(ms.ca1r)
 #Results
 summary(ms.ca2)
 
+
+#### Model categorical provisioning ##### #MOCH
+
+p.ca1 <- lm(Provisioning ~ Wing_Difference_Category + scale(Elevation)*Year, mochBreed.p)
+p.ca2 <- lm(Provisioning ~ Wing_Difference_Category + scale(Elevation) + Year, mochBreed.p)
+
+AIC(p.ca1,p.ca2)
+
+##Check residuals
+p.ca2r = simulateResiduals(p.ca2)
+plot(p.ca2r)
+#Look ok
+
+Anova(p.ca2,test.statistic = "Chisq",type="III")
+#Wing length difference not important for first egg date when used as a categorical variable F=0.467, p=0.7
+summary(p.ca2) #interaction not significant so took out
+
+#### Model categorical wing length data ##### BCCH
+
+p.ca1 <- lm(Provisioning ~ Wing_Difference_Category + scale(Elevation)*Year, bcchBreed.p)
+p.ca2 <- lm(Provisioning ~ Wing_Difference_Category + scale(Elevation) +Year, bcchBreed.p)
+
+AIC(p.ca1, p.ca2) #
+
+##Check residuals
+p.ca2r = simulateResiduals(p.ca2)
+plot(p.ca2r)
+#looks good
+
+Anova(p.ca1,test.statistic = "Chisq",type="III")
+#Wing length difference not important for first egg date when used as a categorical variable X2=0.764, p=0.858
+summary(p.ca2)
+
+#Numeric provisioning MOCH
+p.ca1 <- lm(Provisioning ~ Wing_Difference + scale(Elevation)*Year, data=mochBreedN.p)
+p.ca2 <- lm(Provisioning ~ Wing_Difference + scale(Elevation)+Year, data=mochBreedN.p)
+
+AIC(p.ca1, p.ca2)
+
+#Check Residuals
+p.ca2r = simulateResiduals(p.ca2)
+plot(p.ca2r)
+#look good
+
+#Results
+summary(p.ca2)
+
+
+#Numeric provisioning BCCH
+p.ca1 <- lm(Provisioning ~ Wing_Difference + scale(Elevation)*Year, data=bcchBreedN.p)
+p.ca2 <- lm(Provisioning ~ Wing_Difference + scale(Elevation)+Year, data=bcchBreedN.p)
+
+AIC(p.ca1, p.ca2)
+
+#Check Residuals
+p.ca2r = simulateResiduals(p.ca2)
+plot(p.ca2r)
+#look good
+
+#Results
+summary(p.ca2)
+
 #Plots of Categorical ##### MOCH #######
 
 #First egg date
@@ -514,6 +585,15 @@ ggplot(data=mochBreed.ms.plot,aes(x=factor(Wing_Difference_Category, levels = c(
   theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
   xlab("") + ylab("Male body condition")
 
+#Provisioning
+mochBreed.p.plot <- subset(mochBreed.p, Wing_Difference_Category %in% c("Slightly", "Much"))
+
+ggplot(data=mochBreed.p.plot,aes(x=factor(Wing_Difference_Category, levels = c("Slightly","Much")),y=Provisioning)) +
+  geom_boxplot(aes(fill=Wing_Difference_Category),outlier.alpha = 0) +
+  geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
+  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
+  xlab("") + ylab("Provisioning rate")
+
 
 #Plots of Categorical ##### BCCH #######
 
@@ -572,6 +652,15 @@ ggplot(data=bcchBreed.ms.plot,aes(x=factor(Wing_Difference_Category, levels = c(
   geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
   theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
   xlab("") + ylab("Male body condition")
+
+#Provisioning
+bcchBreed.p.plot <- subset(bcchBreed.p, Wing_Difference_Category %in% c("Slightly", "Much"))
+
+ggplot(data=bcchBreed.p.plot,aes(x=factor(Wing_Difference_Category, levels = c("Slightly","Much")),y=Provisioning)) +
+  geom_boxplot(aes(fill=Wing_Difference_Category),outlier.alpha = 0) +
+  geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
+  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
+  xlab("") + ylab("Provisioning rate")
 
 ##Plotting numeric data
 #first lay MOCH
@@ -665,6 +754,22 @@ ggplot(data = mochBreedN.mS, aes(x=Wing_Difference, y= Male_SMI))+
 
 #Male BCCH
 ggplot(data = bcchBreedN.mS, aes(x=Wing_Difference, y= Male_SMI))+
+  geom_point(size=3,alpha=0.3) +
+  theme_cowplot()+
+  geom_smooth(method="lm",color="black")+
+  xlab("Wing length difference")+
+  ylab("Male body condition")
+
+#Provisioning MOCH
+ggplot(data = mochBreedN.p, aes(x=Wing_Difference, y= Provisioning))+
+  geom_point(size=3,alpha=0.3) +
+  theme_cowplot()+
+  geom_smooth(method="lm",color="black")+
+  xlab("Wing length difference")+
+  ylab("Male body condition")
+
+#Provisioning BCCH
+ggplot(data = bcchBreedN.p, aes(x=Wing_Difference, y= Provisioning))+
   geom_point(size=3,alpha=0.3) +
   theme_cowplot()+
   geom_smooth(method="lm",color="black")+
