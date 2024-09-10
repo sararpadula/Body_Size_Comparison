@@ -462,56 +462,57 @@ head(mochBreed.fe)
 mochBreed.fe.plot <- subset(mochBreed.fe, Wing_Difference_Category %in% c("Slightly", "Much"))
 
 
-ggplot(data=mochBreed.fe.plot,aes(x=Wing_Difference_Category,y=First.Egg)) +
+ggplot(data=mochBreed.fe.plot,aes(x=factor(Wing_Difference_Category, levels = c("Slightly","Much")),y=First.Egg)) +
   geom_boxplot(aes(fill=Wing_Difference_Category),outlier.alpha = 0) +
   geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
-  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("light blue","maroon","lavender")) +
+  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
   xlab("") + ylab("First egg date")
 
 #Clutch Size
 mochBreed.cs.plot <- subset(mochBreed.cs, Wing_Difference_Category %in% c("Slightly", "Much"))
 
-ggplot(data=mochBreed.cs.plot,aes(x=Wing_Difference_Category,y=Egg_Number)) +
+ggplot(data=mochBreed.cs.plot,aes(x=factor(Wing_Difference_Category, levels = c("Slightly","Much")),y=Egg_Number)) +
   geom_boxplot(aes(fill=Wing_Difference_Category),outlier.alpha = 0) +
   geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
-  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("light blue","maroon")) +
+  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
   xlab("") + ylab("Clutch size")
 
 #Brood size
 mochBreed.bs.plot <- subset(mochBreed.bs, Wing_Difference_Category %in% c("Slightly", "Much"))
 
-ggplot(data=mochBreed.bs.plot,aes(x=Wing_Difference_Category,y=Nestling_Number)) +
+ggplot(data=mochBreed.bs.plot,aes(x=factor(Wing_Difference_Category, levels = c("Slightly","Much")),y=Nestling_Number)) +
   geom_boxplot(aes(fill=Wing_Difference_Category),outlier.alpha = 0) +
   geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
-  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("light blue","maroon")) +
+  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
   xlab("") + ylab("Brood size")
 
 #Mean nestling mass
 mochBreed.mm.plot <- subset(mochBreed.mm, Wing_Difference_Category %in% c("Slightly", "Much"))
 
-ggplot(data=mochBreed.mm.plot,aes(x=Wing_Difference_Category,y=Avg_Nestling_Weight)) +
+ggplot(data=mochBreed.mm.plot,aes(x=factor(Wing_Difference_Category, levels = c("Slightly","Much")),y=Avg_Nestling_Weight)) +
   geom_boxplot(aes(fill=Wing_Difference_Category),outlier.alpha = 0) +
   geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
-  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("light blue","maroon")) +
-  xlab("") + ylab("Average Nestling Mass")
+  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
+  xlab("") + ylab("Avg nestling mass")
+
 
 #Female SMI
 mochBreed.fs.plot <- subset(mochBreed.fS, Wing_Difference_Category %in% c("Slightly", "Much"))
 
-ggplot(data=mochBreed.fs.plot,aes(x=Wing_Difference_Category,y=Avg_Nestling_Weight)) +
+ggplot(data=mochBreed.fs.plot,aes(x=factor(Wing_Difference_Category, levels = c("Slightly","Much")),y=Female_SMI)) +
   geom_boxplot(aes(fill=Wing_Difference_Category),outlier.alpha = 0) +
   geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
-  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("light blue","maroon")) +
-  xlab("") + ylab("Female SMI")
+  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
+  xlab("") + ylab("Female body condition")
 
 #Male SMI
 mochBreed.ms.plot <- subset(mochBreed.mS, Wing_Difference_Category %in% c("Slightly", "Much"))
 
-ggplot(data=mochBreed.ms.plot,aes(x=Wing_Difference_Category,y=Avg_Nestling_Weight)) +
+ggplot(data=mochBreed.ms.plot,aes(x=factor(Wing_Difference_Category, levels = c("Slightly","Much")),y=Male_SMI)) +
   geom_boxplot(aes(fill=Wing_Difference_Category),outlier.alpha = 0) +
   geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
-  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("light blue","maroon")) +
-  xlab("") + ylab("Male SMI")
+  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
+  xlab("") + ylab("Male body condition")
 
 
 #Plots of Categorical ##### BCCH #######
@@ -521,53 +522,151 @@ head(bcchBreed.fe)
 bcchBreed.fe.plot <- subset(bcchBreed.fe, Wing_Difference_Category %in% c("Slightly", "Much"))
 
 
-ggplot(data=bcchBreed.fe.plot,aes(x=Wing_Difference_Category,y=First.Egg)) +
+ggplot(data=bcchBreed.fe.plot,aes(x=factor(Wing_Difference_Category, levels = c("Slightly","Much")),y=First.Egg)) +
   geom_boxplot(aes(fill=Wing_Difference_Category),outlier.alpha = 0) +
   geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
-  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("light blue","maroon","lavender")) +
+  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
   xlab("") + ylab("First egg date")
 
 #Clutch Size
 bcchBreed.cs.plot <- subset(bcchBreed.cs, Wing_Difference_Category %in% c("Slightly", "Much"))
 
-ggplot(data=bcchBreed.cs.plot,aes(x=Wing_Difference_Category,y=Egg_Number)) +
+ggplot(data=bcchBreed.cs.plot,aes(x=factor(Wing_Difference_Category, levels = c("Slightly","Much")),y=Egg_Number)) +
   geom_boxplot(aes(fill=Wing_Difference_Category),outlier.alpha = 0) +
   geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
-  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("light blue","maroon")) +
+  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
   xlab("") + ylab("Clutch size")
 
 #Brood size
 bcchBreed.bs.plot <- subset(bcchBreed.bs, Wing_Difference_Category %in% c("Slightly", "Much"))
 
-ggplot(data=bcchBreed.bs.plot,aes(x=Wing_Difference_Category,y=Nestling_Number)) +
+ggplot(data=bcchBreed.bs.plot,aes(x=factor(Wing_Difference_Category, levels = c("Slightly","Much")),y=Nestling_Number)) +
   geom_boxplot(aes(fill=Wing_Difference_Category),outlier.alpha = 0) +
   geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
-  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("light blue","maroon")) +
+  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
   xlab("") + ylab("Brood size")
 
 #Mean nestling mass
 bcchBreed.mm.plot <- subset(bcchBreed.mm, Wing_Difference_Category %in% c("Slightly", "Much"))
 
-ggplot(data=bcchBreed.mm.plot,aes(x=Wing_Difference_Category,y=Avg_Nestling_Weight)) +
+ggplot(data=bcchBreed.mm.plot,aes(x=factor(Wing_Difference_Category, levels = c("Slightly","Much")),y=Avg_Nestling_Weight)) +
   geom_boxplot(aes(fill=Wing_Difference_Category),outlier.alpha = 0) +
   geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
-  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("light blue","maroon")) +
-  xlab("") + ylab("Average Nestling Mass")
+  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
+  xlab("") + ylab("Avg nestling mass")
 
 #Female SMI
 bcchBreed.fs.plot <- subset(bcchBreed.fS, Wing_Difference_Category %in% c("Slightly", "Much"))
 
-ggplot(data=bcchBreed.fs.plot,aes(x=Wing_Difference_Category,y=Avg_Nestling_Weight)) +
+ggplot(data=bcchBreed.fs.plot,aes(x=factor(Wing_Difference_Category, levels = c("Slightly","Much")),y=Female_SMI)) +
   geom_boxplot(aes(fill=Wing_Difference_Category),outlier.alpha = 0) +
   geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
-  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("light blue","maroon")) +
-  xlab("") + ylab("Female SMI")
+  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
+  xlab("") + ylab("Female body condition")
 
 #Male SMI
 bcchBreed.ms.plot <- subset(bcchBreed.mS, Wing_Difference_Category %in% c("Slightly", "Much"))
 
-ggplot(data=bcchBreed.ms.plot,aes(x=Wing_Difference_Category,y=Avg_Nestling_Weight)) +
+ggplot(data=bcchBreed.ms.plot,aes(x=factor(Wing_Difference_Category, levels = c("Slightly","Much")),y=Male_SMI)) +
   geom_boxplot(aes(fill=Wing_Difference_Category),outlier.alpha = 0) +
   geom_point(position=position_jitter(width=0.1,height=0),alpha=0.6) +
-  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("light blue","maroon")) +
-  xlab("") + ylab("Male SMI")
+  theme_cowplot() + theme(legend.position = "") + scale_fill_manual(values=c("gray","orange")) +
+  xlab("") + ylab("Male body condition")
+
+##Plotting numeric data
+#first lay MOCH
+ggplot(data = mochBreedN.fe, aes(x=Wing_Difference, y= First.Egg))+
+  geom_point(size=3,alpha=0.3) +
+  theme_cowplot()+
+  geom_smooth(method="lm",color="black")+
+  xlab("Wing length difference")+
+  ylab("Day of first lay")
+
+#first lay BCCH
+ggplot(data = bcchBreedN.fe, aes(x=Wing_Difference, y= First.Egg))+
+  geom_point(size=3,alpha=0.3) +
+  theme_cowplot()+
+  geom_smooth(method="lm",color="black")+
+  xlab("Wing length difference")+
+  ylab("Day of first lay")
+
+#Clutch size MOCH
+ggplot(data = mochBreedN.cs, aes(x=Wing_Difference, y= Egg_Number))+
+  geom_point(size=3,alpha=0.3) +
+  theme_cowplot()+
+  geom_smooth(method="lm",color="black")+
+  xlab("Wing length difference")+
+  ylab("Clutch size")
+
+#Clutch size BCCH
+ggplot(data = bcchBreedN.cs, aes(x=Wing_Difference, y= Egg_Number))+
+  geom_point(size=3,alpha=0.3) +
+  theme_cowplot()+
+  geom_smooth(method="lm",color="black")+
+  xlab("Wing length difference")+
+  ylab("Clutch size")
+
+#Brood size MOCH
+ggplot(data = mochBreedN.bs, aes(x=Wing_Difference, y= Nestling_Number))+
+  geom_point(size=3,alpha=0.3) +
+  theme_cowplot()+
+  geom_smooth(method="lm",color="black")+
+  xlab("Wing length difference")+
+  ylab("Brood size")
+
+
+#Brood size BCCH
+ggplot(data = bcchBreedN.bs, aes(x=Wing_Difference, y= Nestling_Number))+
+  geom_point(size=3,alpha=0.3) +
+  theme_cowplot()+
+  geom_smooth(method="lm",color="black")+
+  xlab("Wing length difference")+
+  ylab("Brood size")
+
+#Mean nestling mass MOCH
+ggplot(data = mochBreedN.mm, aes(x=Wing_Difference, y= Avg_Nestling_Weight))+
+  geom_point(size=3,alpha=0.3) +
+  theme_cowplot()+
+  geom_smooth(method="lm",color="black")+
+  xlab("Wing length difference")+
+  ylab("Mean nestling mass")
+
+#Mean nestling mass BCCH
+ggplot(data = bcchBreedN.mm, aes(x=Wing_Difference, y= Avg_Nestling_Weight))+
+  geom_point(size=3,alpha=0.3) +
+  theme_cowplot()+
+  geom_smooth(method="lm",color="black")+
+  xlab("Wing length difference")+
+  ylab("Mean nestling mass")
+
+#Female SMI MOCH
+ggplot(data = mochBreedN.fS, aes(x=Wing_Difference, y= Female_SMI))+
+  geom_point(size=3,alpha=0.3) +
+  theme_cowplot()+
+  geom_smooth(method="lm",color="black")+
+  xlab("Wing length difference")+
+  ylab("Female body condition")
+
+#Female SMI BCCH
+ggplot(data = bcchBreedN.fS, aes(x=Wing_Difference, y= Female_SMI))+
+  geom_point(size=3,alpha=0.3) +
+  theme_cowplot()+
+  geom_smooth(method="lm",color="black")+
+  xlab("Wing length difference")+
+  ylab("Female body condition")
+
+#Male SMI MOCH
+ggplot(data = mochBreedN.mS, aes(x=Wing_Difference, y= Male_SMI))+
+  geom_point(size=3,alpha=0.3) +
+  theme_cowplot()+
+  geom_smooth(method="lm",color="black")+
+  xlab("Wing length difference")+
+  ylab("Male body condition")
+
+#Male BCCH
+ggplot(data = bcchBreedN.mS, aes(x=Wing_Difference, y= Male_SMI))+
+  geom_point(size=3,alpha=0.3) +
+  theme_cowplot()+
+  geom_smooth(method="lm",color="black")+
+  xlab("Wing length difference")+
+  ylab("Male body condition")
