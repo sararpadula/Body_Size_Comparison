@@ -12,6 +12,7 @@ library(lme4)
 library(lmerTest)
 library(DHARMa)
 library(climwin)
+library(patchwork)
 
 #Get each individual represented once for male-female population comparisons
 head(BS)
@@ -34,7 +35,7 @@ ggplot(data= BSpopMOCH, aes(x = Sex, y = Wing.Chord))+
   geom_boxplot(aes(fill = Sex), alpha = 0.8, outlier.alpha = 0, width = 0.5)+
   geom_line(aes(x=Sex, y=Wing.Chord, group = Nest.ID), alpha=0.1, size=0.4)+
   geom_point(data=BSPopplotMOCH, aes(x=Sex, y=Wing.Chord,size=n2),alpha=0.5)+
-  theme_cowplot() + scale_fill_manual(values=c("dark gray","dark gray"))+
+  theme_cowplot() + scale_fill_manual(values=c("#E1BE6A","#40B0a6"))+
   theme(legend.position="")+
   xlab("Sex")+
   ylab("Wing length (mm)")
@@ -44,7 +45,7 @@ ggplot(data= BSpopBCCH, aes(x = Sex, y = Wing.Chord))+
   geom_boxplot(aes(fill = Sex), alpha = 0.8, outlier.alpha = 0, width = 0.5)+
   geom_line(aes(x=Sex, y=Wing.Chord, group = Nest.ID), alpha=0.1, size=0.4)+
   geom_point(data=BSPopplotBCCH, aes(x=Sex, y=Wing.Chord,size=n2),alpha=0.5)+
-  theme_cowplot() + scale_fill_manual(values=c("dark gray","dark gray"))+
+  theme_cowplot() + scale_fill_manual(values=c("#E1BE6A","#40B0a6"))+
   theme(legend.position="")+
   xlab("Sex")+
   ylab("Wing length (mm)")
@@ -79,7 +80,7 @@ BSpopBCCH$Sex <- as.factor(BSpopBCCH$Sex)
 BSpopMOCH$Bander <- as.factor(BSpopMOCH$Bander)
 BSpopBCCH$Bander <- as.factor(BSpopBCCH$Bander)
 #modelling the population level
-m.p4a <- lmer(Wing.Chord~Sex + Elevation + Bander + (1|Nest.ID), data = BSpopMOCH)
+m.p4a <- lmer(Wing.Chord~Sex + Elevation + Bander +(1|Nest.ID), data = BSpopMOCH)
 
 m.p4ar <- simulateResiduals(m.p4a)
 plot(m.p4ar)
@@ -91,7 +92,7 @@ anova(m.p4a) #sex is important
 summary(m.p4a)
 
 #modelling the population level
-b.p4a <- lmer(Wing.Chord~Sex + Elevation + Bander + (1|Nest.ID), data = BSpopMOCH)
+b.p4a <- lmer(Wing.Chord~Sex + Elevation + Bander + (1|Nest.ID), data = BSpopBCCH)
 
 b.p4ar <- simulateResiduals(b.p4a)
 plot(b.p4ar)
@@ -151,7 +152,7 @@ mochWing <- MOCH.mf %>% select(BirdID, Wing.Chord) %>%
 
 #Get observed percentage of negative pairings
 obs.n1 <- MOCH.mf %>% group_by(Pair.ID)%>% arrange(Sex) %>%
-  summarise(wing.diff=diff(Wing.Chord)) %>% filter(wing.diff<0)
+  reframe(wing.diff=diff(Wing.Chord)) %>% filter(wing.diff<0)
 obs.n1 <- nrow(obs.n1)/(nrow(MOCH.mf)/2)
 
 
@@ -159,7 +160,7 @@ obs.n1 <- nrow(obs.n1)/(nrow(MOCH.mf)/2)
 rand.results1 <- matrix(nrow=1000, ncol=1)
 
 #Set seed before randomizations
-set.seed(25)
+set.seed(26)
 
 #Permutation
 for(i in 1:nrow(rand.results1)){
@@ -168,13 +169,13 @@ for(i in 1:nrow(rand.results1)){
   bpw.mfrr2 <- bpw.mfrr %>% left_join(mochWing,by="BirdIDr")
   
   obs.nr <- bpw.mfrr2 %>% group_by(Pair.ID) %>% arrange(Sex) %>%
-    summarise(wing.diff = diff(Wing.Chordr)) %>% filter(wing.diff <0)
+    reframe(wing.diff = diff(Wing.Chordr)) %>% filter(wing.diff <0)
   rand.results1[i] = nrow(obs.nr)/(nrow(bpw.mfrr2)/2)
 }
 
 ##Plot results
 rand.results1 = as.data.frame(rand.results1)
-ggplot() + geom_histogram(data=rand.results1,aes(x=V1*100),binwidth = 0.5,fill="maroon",color="black",alpha=0.8) + 
+mochPermFL<- ggplot() + geom_histogram(data=rand.results1,aes(x=V1*100),bins=10,fill="#cc79a7",color="black") + 
   geom_vline(aes(xintercept=obs.n1*100),color="black",size=1.8) +
   geom_vline(aes(xintercept=obs.n1*100),color="#ADD8E6",size=1) + 
   theme_cowplot() + xlab("Percent female larger\npairings") + ylab("Count")
@@ -221,8 +222,8 @@ for(i in 1:nrow(rand.results2)){
 
 #plot results
 rand.results2 <- as.data.frame(rand.results2)
-ggplot()+
-  geom_histogram(data=rand.results2, aes(x=V1*100),binwidth=0.5,fill="maroon",color="black",alpha=0.8)+
+mochPermMS <-ggplot()+
+  geom_histogram(data=rand.results2, aes(x=V1*100),bins=10,fill="#cc79a7",color="black")+
   geom_vline(aes(xintercept=obs.n2*100),color="black",size=1.8) +
   geom_vline(aes(xintercept=obs.n2*100),color="#ADD8e6",size=1)+
   theme_cowplot()+
@@ -269,8 +270,8 @@ for(i in 1:nrow(rand.results3)){
 
 #Plot results
 rand.results3 <- as.data.frame(rand.results3)
-ggplot() +
-  geom_histogram(data=rand.results3,aes(x=V1*100), binwidth=0.5,fill="maroon",color="black",alpha=0.8)+
+mochPermML <-ggplot() +
+  geom_histogram(data=rand.results3,aes(x=V1*100), bins=10,fill="#cc79a7",color="black")+
   geom_vline(aes(xintercept=obs.n3*100),color="black",size=1.8)+
   geom_vline(aes(xintercept=obs.n3*100),color="#ADD8E6",size=1)+
   theme_cowplot()+
@@ -282,6 +283,9 @@ p= sum(obs.n3>rand.results3$V1)/nrow(rand.results3)
 print(p) #0.014
 (obs.n3*100) - (mean(rand.results3$V1)*100)
 # see about 8 percent fewer male much larger pairings than expected by chance
+
+#put together the three histograms
+
 
 ###------------------------------------------------------########
 #REDOING PERMUTATIONS BUT WITH THE BCCH DATA
@@ -326,7 +330,7 @@ for(i in 1:nrow(rand.results4)){
 
 ##Plot results
 rand.results4 = as.data.frame(rand.results4)
-ggplot() + geom_histogram(data=rand.results4,aes(x=V1*100),binwidth = 0.5,fill="maroon",color="black",alpha=0.8) + 
+ggplot() + geom_histogram(data=rand.results4,aes(x=V1*100),bins = 10,fill="#0072b2",color="black",alpha=0.8) + 
   geom_vline(aes(xintercept=obs.n4*100),color="black",size=1.8) +
   geom_vline(aes(xintercept=obs.n4*100),color="#ADD8E6",size=1) + 
   theme_cowplot() + xlab("Percent female larger\npairings") + ylab("Count")
@@ -374,7 +378,7 @@ for(i in 1:nrow(rand.results5)){
 #plot results
 rand.results5 <- as.data.frame(rand.results5)
 ggplot()+
-  geom_histogram(data=rand.results5, aes(x=V1*100),binwidth=0.5,fill="maroon",color="black",alpha=0.8)+
+  geom_histogram(data=rand.results5, aes(x=V1*100),bins=10,fill="#0072b2",color="black",alpha=0.8)+
   geom_vline(aes(xintercept=obs.n5*100),color="black",size=1.8) +
   geom_vline(aes(xintercept=obs.n5*100),color="#ADD8e6",size=1)+
   theme_cowplot()+
@@ -422,7 +426,7 @@ for(i in 1:nrow(rand.results6)){
 #Plot results
 rand.results6 <- as.data.frame(rand.results6)
 ggplot() +
-  geom_histogram(data=rand.results6,aes(x=V1*100), binwidth=0.5,fill="maroon",color="black",alpha=0.8)+
+  geom_histogram(data=rand.results6,aes(x=V1*100), bins=10,fill="#0072b2",color="black",alpha=0.8)+
   geom_vline(aes(xintercept=obs.n6*100),color="black",size=1.8)+
   geom_vline(aes(xintercept=obs.n6*100),color="#ADD8E6",size=1)+
   theme_cowplot()+

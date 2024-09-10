@@ -24,6 +24,7 @@ breed$logElevation <- log(breed$Elevation)
 breed <- breed %>%
   mutate(Year = as.factor(Year), MaleBander = as.factor(MaleBander), FemaleBander = as.factor(FemaleBander), as.factor(Location))
 
+
 mochBreed <- subset(breed, Species == "MOCH")
 bcchBreed <- subset(breed, Species == "BCCH")
 
@@ -58,6 +59,38 @@ bcchBreed.fS <- bcchBreed %>% filter(!is.na(Female_SMI))
 mochBreed.mS <- mochBreed %>% filter(!is.na(Male_SMI))
 bcchBreed.mS <- bcchBreed %>% filter(!is.na(Male_SMI))
 
+## Numerically subsetting data #########################################
+mochBreedNum <- subset(breed, Species == "MOCH")
+bcchBreedNum <- subset(breed, Species == "BCCH")
+
+#first egg date
+#remove blank values
+mochBreedN.fe <- mochBreedNum %>% filter(!is.na(First.Egg))
+bcchBreedN.fe <- bcchBreedNum %>% filter(!is.na(First.Egg))
+
+## Clutch Size
+#Remove blank values
+mochBreedN.cs <- mochBreedNum %>% filter(!is.na(Egg_Number))
+bcchBreedN.cs <- bcchBreedNum %>% filter(!is.na(Egg_Number))
+
+## Brood Size
+#Remove Blank values
+mochBreedN.bs <- mochBreedNum %>% filter(!is.na(Nestling_Number))
+bcchBreedN.bs <- bcchBreedNum %>% filter(!is.na(Nestling_Number))
+
+## Mean nestling mass
+#Remove Blank values
+mochBreedN.mm <- mochBreedNum %>% filter(!is.na(Avg_Nestling_Weight))
+bcchBreedN.mm <- bcchBreedNum %>% filter(!is.na(Avg_Nestling_Weight))
+
+## Female SMI
+mochBreedN.fS <- mochBreedNum %>% filter(!is.na(Female_SMI))
+bcchBreedN.fS <- bcchBreedNum %>% filter(!is.na(Female_SMI))
+
+## Male SMI
+mochBreedN.mS <- mochBreedNum %>% filter(!is.na(Male_SMI))
+bcchBreedN.mS <- bcchBreedNum %>% filter(!is.na(Male_SMI))
+
 #### Model categorical wing length data ##### #MOCH
 
 fe.ca1 <- lm(First.Egg ~ Wing_Difference_Category + scale(Elevation)*Year, mochBreed.fe)
@@ -77,7 +110,7 @@ summary(fe.ca2) #interaction not significant so took out
 #### Model categorical wing length data ##### BCCH
 
 fe.ca1 <- lm(First.Egg ~ Wing_Difference_Category + scale(Elevation)*Year, bcchBreed.fe)
-fe.ca2 <- lm(First.Egg ~ Wing_Difference_Category + Year, bcchBreed.fe)
+fe.ca2 <- lm(First.Egg ~ Wing_Difference_Category + scale(Elevation) +Year, bcchBreed.fe)
 
 AIC(fe.ca1, fe.ca2) #
 
@@ -91,6 +124,37 @@ Anova(fe.ca1,test.statistic = "Chisq",type="III")
 summary(fe.ca2)
 
 
+### Modeling first lay numerically #########################################
+#MOCH
+fe.ca1 <- lm(First.Egg ~ Wing_Difference + scale(Elevation)*Year, mochBreedN.fe)
+fe.ca2 <- lm(First.Egg ~ Wing_Difference + scale(Elevation) + Year, mochBreedN.fe)
+
+AIC(fe.ca1,fe.ca2)
+
+##Check residuals
+fe.ca2r = simulateResiduals(fe.ca2)
+plot(fe.ca1r)
+#Look ok
+
+Anova(fe.ca2,test.statistic = "Chisq",type="III")
+#Wing length difference not important for first egg date when used as a categorical variable X2=0.764, p=0.858
+summary(fe.ca2)
+
+#BCCH
+fe.ca1 <- lm(First.Egg ~ Wing_Difference + scale(Elevation)*Year, bcchBreedN.fe)
+fe.ca2 <- lm(First.Egg ~ Wing_Difference + scale(Elevation) + Year, bcchBreedN.fe)
+
+AIC(fe.ca1,fe.ca2)
+
+##Check residuals
+fe.ca2r = simulateResiduals(fe.ca2)
+plot(fe.ca1r)
+#Look ok
+
+Anova(fe.ca2,test.statistic = "Chisq",type="III")
+#Wing length difference not important for first egg date when used as a categorical variable X2=0.764, p=0.858
+summary(fe.ca2)
+
 ### Model clutch size categorical
 cs.ca1 <- glmmTMB(Egg_Number ~ Wing_Difference_Category + scale(Elevation) + Year + scale(First.Egg), data=mochBreed.cs, family = "genpois")
 cs.ca2 <- glmmTMB(Egg_Number ~ Wing_Difference_Category + scale(Elevation) * Year + scale(First.Egg), data=mochBreed.cs, family = "genpois")
@@ -100,8 +164,8 @@ anova(cs.ca1,cs.ca2) #New interaction does not improve
 anova(cs.ca1,cs.ca3) #New interaction does not improve
 
 #Check residuals
-cs.ca2r = simulateResiduals(cs.ca2)
-plot(cs.ca2r)
+cs.ca1r = simulateResiduals(cs.ca1)
+plot(cs.ca1r)
 #look ok
 
 #Results
@@ -109,7 +173,7 @@ Anova(cs.ca1,test.statistic = "Chisq",type="III")
 #Wing length difference not important for clutch size when used as a categorical variable X2=0.27, p=0.604
 summary(cs.ca1)
 
-### Model clutch size categorical
+### Model clutch size categorical #BCCH
 cs.ca1 <- glmmTMB(Egg_Number ~ Wing_Difference_Category + scale(Elevation) + Year + scale(First.Egg), data=bcchBreed.cs, family = "genpois")
 cs.ca2 <- glmmTMB(Egg_Number ~ Wing_Difference_Category + scale(Elevation) * Year + scale(First.Egg), data=bcchBreed.cs, family = "genpois")
 cs.ca3 <- glmmTMB(Egg_Number ~ Wing_Difference_Category*scale(Elevation) + scale(Elevation) * Year + scale(First.Egg), data=bcchBreed.cs, family = "genpois")
@@ -127,6 +191,41 @@ Anova(cs.ca1,test.statistic = "Chisq",type="III")
 #Wing length difference not important for clutch size when used as a categorical variable X2=0.27, p=0.604
 summary(cs.ca1)
 
+## MODEL CLUTCH SIZE NUMERIC MOCH
+cs.ca1 <- glmmTMB(Egg_Number ~ Wing_Difference + scale(Elevation) + Year + scale(First.Egg), data=mochBreedN.cs, family = "genpois")
+cs.ca2 <- glmmTMB(Egg_Number ~ Wing_Difference + scale(Elevation) * Year + scale(First.Egg), data=mochBreedN.cs, family = "genpois")
+cs.ca3 <- glmmTMB(Egg_Number ~ Wing_Difference*scale(Elevation) + scale(Elevation) * Year + scale(First.Egg), data=mochBreedN.cs, family = "genpois")
+
+anova(cs.ca1,cs.ca2) #New interaction does not improve
+anova(cs.ca1,cs.ca3) #New interaction does not improve
+
+#Check residuals
+cs.ca1r = simulateResiduals(cs.ca1)
+plot(cs.ca1r)
+#look ok
+
+#Results
+Anova(cs.ca1,test.statistic = "Chisq",type="III")
+#Wing length difference not important for clutch size when used as a categorical variable X2=0.27, p=0.604
+summary(cs.ca1)
+
+## MODEL CLUTCH SIZE NUMERIC BCCH
+cs.ca1 <- glmmTMB(Egg_Number ~ Wing_Difference + scale(Elevation) + Year + scale(First.Egg), data=bcchBreedN.cs, family = "genpois")
+cs.ca2 <- glmmTMB(Egg_Number ~ Wing_Difference + scale(Elevation) * Year + scale(First.Egg), data=bcchBreedN.cs, family = "genpois")
+cs.ca3 <- glmmTMB(Egg_Number ~ Wing_Difference*scale(Elevation) + scale(Elevation) * Year + scale(First.Egg), data=bcchBreedN.cs, family = "genpois")
+
+anova(cs.ca1,cs.ca2) #New interaction does not improve
+anova(cs.ca1,cs.ca3) #New interaction does not improve
+
+#Check residuals
+cs.ca1r = simulateResiduals(cs.ca1)
+plot(cs.ca1r)
+#look ok
+
+#Results
+Anova(cs.ca1,test.statistic = "Chisq",type="III")
+#Wing length difference not important for clutch size when used as a categorical variable X2=0.27, p=0.604
+summary(cs.ca1)
 
 #model brood size categorical moch
 bs.ca1 <- glmmTMB(Nestling_Number ~ Wing_Difference_Category + scale(Elevation)*Year, data=mochBreed.bs, family = "genpois")
@@ -156,7 +255,38 @@ plot(bs.ca2r)
 ##Results
 Anova(bs.ca2,test.statistic = "Chisq",type="III")
 #No effect of wing length on brood size at low X2=6.23, p=0.1
+summary(bs.ca2)
+
+#MODEL BROOD SIZE NUMERIC moch
+bs.ca1 <- glmmTMB(Nestling_Number ~ Wing_Difference + scale(Elevation)*Year, data=mochBreedN.bs, family = "genpois")
+bs.ca2 <- glmmTMB(Nestling_Number ~ Wing_Difference + scale(Elevation) + Year, data=mochBreedN.bs, family = "genpois")
+anova(bs.ca1,bs.ca2)
+
+##Check residuals
+bs.ca2r = simulateResiduals(bs.ca2)
+plot(bs.ca2r)
+#Not bad
+
+##Results
+Anova(bs.ca2,test.statistic = "Chisq",type="III")
+#No effect of wing length on brood size at low X2=6.23, p=0.1
+summary(bs.ca2)
+
+#MODEL BROOD SIZE NUMERIC bcch
+bs.ca1 <- glmmTMB(Nestling_Number ~ Wing_Difference + scale(Elevation)*Year, data=bcchBreedN.bs, family = "genpois")
+bs.ca2 <- glmmTMB(Nestling_Number ~ Wing_Difference + scale(Elevation) + Year, data=bcchBreedN.bs, family = "genpois")
+anova(bs.ca1,bs.ca2)
+
+##Check residuals
+bs.ca1r = simulateResiduals(bs.ca1)
+plot(bs.ca1r)
+#Not bad
+
+##Results
+Anova(bs.ca2,test.statistic = "Chisq",type="III")
+#No effect of wing length on brood size at low X2=6.23, p=0.1
 summary(bs.ca1)
+
 
 ### Model mean mass categorical moch
 mm.ca1 <- lm(Avg_Nestling_Weight ~ Wing_Difference_Category + scale(Elevation)*Year, data=mochBreed.mm)
@@ -186,6 +316,33 @@ plot(mm.ca2r)
 #Results
 summary(mm.ca2)
 
+#MODELING MEAN MASS NUMERICALLY MOCH
+mm.ca1 <- lm(Avg_Nestling_Weight ~ Wing_Difference + scale(Elevation)*Year, data=mochBreedN.mm)
+mm.ca2 <- lm(Avg_Nestling_Weight ~ Wing_Difference + scale(Elevation)+Year, data=mochBreedN.mm)
+
+AIC(mm.ca1, mm.ca2)
+
+#Check Residuals
+mm.ca1r = simulateResiduals(mm.ca1)
+plot(mm.ca1r)
+#look good
+
+#Results
+summary(mm.ca1)
+
+#MODELING MEAN MASS NUMERICALLY MOCH
+mm.ca1 <- lm(Avg_Nestling_Weight ~ Wing_Difference + scale(Elevation)*Year, data=bcchBreedN.mm)
+mm.ca2 <- lm(Avg_Nestling_Weight ~ Wing_Difference + scale(Elevation)+Year, data=bcchBreedN.mm)
+
+AIC(mm.ca1, mm.ca2)
+
+#Check Residuals
+mm.ca1r = simulateResiduals(mm.ca1)
+plot(mm.ca1r)
+#look good
+
+#Results
+summary(mm.ca1)
 
 ##Model Female SMI moch
 fs.ca1 <- lm(Female_SMI ~ Wing_Difference_Category + scale(Elevation)*Year, data=mochBreed.fS)
@@ -238,6 +395,61 @@ AIC(ms.ca1, ms.ca2)
 #Check Residuals
 ms.ca2r = simulateResiduals(ms.ca2)
 plot(ms.ca2r)
+#look good
+
+#Results
+summary(ms.ca2)
+
+#NUMERIC FEMALE BODY CONDITION MOCH
+fs.ca1 <- lm(Female_SMI ~ Wing_Difference + scale(Elevation)*Year, data=mochBreedN.fS)
+fs.ca2 <- lm(Female_SMI ~ Wing_Difference + scale(Elevation)+Year, data=mochBreedN.fS)
+
+AIC(fs.ca1, fs.ca2)
+
+#Check Residuals
+fs.ca2r = simulateResiduals(fs.ca2)
+plot(fs.ca2r)
+#look good
+
+#Results
+summary(fs.ca2)
+
+#NUMERIC FEMALE BODY CONDITION BCCH
+fs.ca1 <- lm(Female_SMI ~ Wing_Difference + scale(Elevation)*Year, data=bcchBreedN.fS)
+fs.ca2 <- lm(Female_SMI ~ Wing_Difference + scale(Elevation)+Year, data=bcchBreedN.fS)
+
+AIC(fs.ca1, fs.ca2)
+
+#Check Residuals
+fs.ca2r = simulateResiduals(fs.ca2)
+plot(fs.ca2r)
+#look good
+
+#Results
+summary(fs.ca2)
+
+#NUMERIC MALE BODY CONDITION MOCH
+ms.ca1 <- lm(Male_SMI ~ Wing_Difference + scale(Elevation)*Year, data=mochBreedN.mS)
+ms.ca2 <- lm(Male_SMI ~ Wing_Difference + scale(Elevation)+Year, data=mochBreedN.mS)
+
+AIC(ms.ca1, ms.ca2)
+
+#Check Residuals
+ms.ca2r = simulateResiduals(ms.ca2)
+plot(ms.ca2r)
+#look good
+
+#Results
+summary(ms.ca2)
+#NUMERIC MALE BODY CONDITION BCCH
+ms.ca1 <- lm(Male_SMI ~ Wing_Difference + scale(Elevation)*Year, data=bcchBreedN.mS)
+ms.ca2 <- lm(Male_SMI ~ Wing_Difference + scale(Elevation)+Year, data=bcchBreedN.mS)
+
+AIC(ms.ca1, ms.ca2)
+
+#Check Residuals
+ms.ca1r = simulateResiduals(ms.ca1)
+plot(ms.ca1r)
 #look good
 
 #Results
