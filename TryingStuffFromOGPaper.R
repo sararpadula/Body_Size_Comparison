@@ -31,7 +31,7 @@ BSPopplotMOCH = BSpopMOCH %>% group_by(Sex, Wing.Chord) %>% summarise(n=n()) %>%
 
 BSPopplotBCCH = BSpopBCCH %>% group_by(Sex, Wing.Chord) %>% summarise(n=n()) %>% mutate(n2 = n/2)
 
-ggplot(data= BSpopMOCH, aes(x = Sex, y = Wing.Chord))+
+mochBox <-ggplot(data= BSpopMOCH, aes(x = Sex, y = Wing.Chord))+
   geom_boxplot(aes(fill = Sex), alpha = 0.8, outlier.alpha = 0, width = 0.5)+
   geom_line(aes(x=Sex, y=Wing.Chord, group = Nest.ID), alpha=0.1, size=0.4)+
   geom_point(data=BSPopplotMOCH, aes(x=Sex, y=Wing.Chord,size=n2),alpha=0.5)+
@@ -41,14 +41,15 @@ ggplot(data= BSpopMOCH, aes(x = Sex, y = Wing.Chord))+
   ylab("Wing length (mm)")
 
 
-ggplot(data= BSpopBCCH, aes(x = Sex, y = Wing.Chord))+
+bcchBox <-ggplot(data= BSpopBCCH, aes(x = Sex, y = Wing.Chord))+
   geom_boxplot(aes(fill = Sex), alpha = 0.8, outlier.alpha = 0, width = 0.5)+
   geom_line(aes(x=Sex, y=Wing.Chord, group = Nest.ID), alpha=0.1, size=0.4)+
   geom_point(data=BSPopplotBCCH, aes(x=Sex, y=Wing.Chord,size=n2),alpha=0.5)+
   theme_cowplot() + scale_fill_manual(values=c("#E1BE6A","#40B0a6"))+
   theme(legend.position="")+
   xlab("Sex")+
-  ylab("Wing length (mm)")
+  ylab("")
+boxp <- mochBox + bcchBox
 
 #subsetting main dataset
 head(BS)
@@ -285,7 +286,9 @@ print(p) #0.014
 # see about 8 percent fewer male much larger pairings than expected by chance
 
 #put together the three histograms
+p_perm_moch <- mochPermFL + mochPermMS + mochPermML
 
+p_perm_moch
 
 ###------------------------------------------------------########
 #REDOING PERMUTATIONS BUT WITH THE BCCH DATA
@@ -330,7 +333,7 @@ for(i in 1:nrow(rand.results4)){
 
 ##Plot results
 rand.results4 = as.data.frame(rand.results4)
-ggplot() + geom_histogram(data=rand.results4,aes(x=V1*100),bins = 10,fill="#0072b2",color="black",alpha=0.8) + 
+bcch_FL <-ggplot() + geom_histogram(data=rand.results4,aes(x=V1*100),bins = 10,fill="#0072b2",color="black",alpha=0.8) + 
   geom_vline(aes(xintercept=obs.n4*100),color="black",size=1.8) +
   geom_vline(aes(xintercept=obs.n4*100),color="#ADD8E6",size=1) + 
   theme_cowplot() + xlab("Percent female larger\npairings") + ylab("Count")
@@ -377,7 +380,7 @@ for(i in 1:nrow(rand.results5)){
 
 #plot results
 rand.results5 <- as.data.frame(rand.results5)
-ggplot()+
+bcch_MS <-ggplot()+
   geom_histogram(data=rand.results5, aes(x=V1*100),bins=10,fill="#0072b2",color="black",alpha=0.8)+
   geom_vline(aes(xintercept=obs.n5*100),color="black",size=1.8) +
   geom_vline(aes(xintercept=obs.n5*100),color="#ADD8e6",size=1)+
@@ -425,7 +428,7 @@ for(i in 1:nrow(rand.results6)){
 
 #Plot results
 rand.results6 <- as.data.frame(rand.results6)
-ggplot() +
+bcch_ML <-ggplot() +
   geom_histogram(data=rand.results6,aes(x=V1*100), bins=10,fill="#0072b2",color="black",alpha=0.8)+
   geom_vline(aes(xintercept=obs.n6*100),color="black",size=1.8)+
   geom_vline(aes(xintercept=obs.n6*100),color="#ADD8E6",size=1)+
@@ -439,6 +442,8 @@ print(p) #0.097
 (obs.n6*100) - (mean(rand.results6$V1)*100)
 # see about 6.7 less than much larger, but not significant
 
-
+#put plots together
+p_bcch_perm <- bcch_FL + bcch_MS + bcch_ML
+p_bcch_perm
 
 

@@ -100,7 +100,7 @@ bcchBreedN.mS <- bcchBreedNum %>% filter(!is.na(Male_SMI))
 mochBreedN.p <- mochBreedNum %>% filter(!is.na(Provisioning))
 bcchBreedN.p <- bcchBreedNum %>% filter(!is.na(Provisioning))
 
-#### Model categorical wing length data ##### #MOCH
+#### Model categorical wing length data ##### #MOC
 
 fe.ca1 <- lm(First.Egg ~ Wing_Difference_Category + scale(Elevation)*Year, mochBreed.fe)
 fe.ca2 <- lm(First.Egg ~ Wing_Difference_Category + scale(Elevation) + Year, mochBreed.fe)
@@ -326,7 +326,7 @@ plot(mm.ca2r)
 summary(mm.ca2)
 
 #MODELING MEAN MASS NUMERICALLY MOCH
-mm.ca1 <- lm(Avg_Nestling_Weight ~ Wing_Difference + scale(Elevation)*Year, data=mochBreedN.mm)
+mm.ca1 <- lm(Avg_Nestling_Weight ~ Wing_Difference +First.Egg + scale(Elevation)*Year, data=mochBreedN.mm)
 mm.ca2 <- lm(Avg_Nestling_Weight ~ Wing_Difference + scale(Elevation)+Year, data=mochBreedN.mm)
 
 AIC(mm.ca1, mm.ca2)
