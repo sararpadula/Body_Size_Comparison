@@ -26,6 +26,17 @@ BSpopBCCH <- subset(BSpopI, Species == "BCCH")
 BSpopMOCH = BSpopMOCH %>% mutate(Nest.ID = paste(Nestbox, Year))
 BSpopBCCH = BSpopBCCH %>% mutate(Nest.ID = paste(Nestbox, Year))
 
+
+head(BSpopMOCH)
+
+#is there sexual dimorphism
+
+sd_MOCH <- lm(Wing.Chord ~ Sex, data = BSpopMOCH)
+summary(sd_MOCH)
+
+sd_BCCH <- lm(Wing.Chord ~ Sex, data = BSpopBCCH)
+summary(sd_BCCH)
+
 #plot variation by sex first for MOCH then for BCCH
 BSPopplotMOCH = BSpopMOCH %>% group_by(Sex, Wing.Chord) %>% summarise(n=n()) %>% mutate(n2 = n/2)
 
@@ -62,7 +73,7 @@ ggplot(data = BSMOCH, aes(x=Female.Wing.Chord, y= Male.Wing.Chord))+
   geom_smooth(method="lm",color="black")+
   xlab("Female Wing Length (mm)")+
   ylab("Male Wing Length (mm)")+
-  stat_regline_equation(aes(label = paste(after_stat(eq.label), after_stat(rr.label), sep = "~~~~")),label.x=66, label.y=72)
+  stat_regline_equation(aes(label = paste(after_stat(eq.label), after_stat(rr.label), sep = "~~~~")),label.x=66, label.y=72.5)
 
 ggplot(data = BSBCCH, aes(x=Female.Wing.Chord, y= Male.Wing.Chord))+
   geom_point(size=3,alpha=0.3) +
